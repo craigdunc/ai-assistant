@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(npm uninstall *)",
+      "Bash(node -e \"const d=require\\('./tripkit_catalogue_starter.json'\\);console.log\\('count:',d.length\\);const cats=[...new Set\\(d.map\\(p=>p.category\\)\\)];const brands=[...new Set\\(d.map\\(p=>p.brand\\)\\)];const styles=[...new Set\\(d.flatMap\\(p=>p.travel_style||[]\\)\\)];const stages=[...new Set\\(d.flatMap\\(p=>p.trip_stage||[]\\)\\)];const climates=[...new Set\\(d.flatMap\\(p=>p.climate_suitability||[]\\)\\)];console.log\\('categories\\('+cats.length+'\\):',cats\\);console.log\\('brands\\('+brands.length+'\\):',brands\\);console.log\\('travel_style\\('+styles.length+'\\):',styles\\);console.log\\('trip_stage\\('+stages.length+'\\):',stages\\);console.log\\('climate\\('+climates.length+'\\):',climates\\);console.log\\('priceRange:',Math.min\\(...d.map\\(p=>p.price_aud\\)\\),'-',Math.max\\(...d.map\\(p=>p.price_aud\\)\\)\\);\")"
+    ]
+  }
+}
