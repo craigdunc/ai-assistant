@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DEFAULT_STATE, type CatalogueState, type ChatMessage } from "@/lib/types";
+import { DEFAULT_STATE, type CatalogueState, type ChatMessage, type Product } from "@/lib/types";
 import { applyState } from "@/lib/filter-sort";
 import { PRODUCTS } from "@/lib/products";
 
