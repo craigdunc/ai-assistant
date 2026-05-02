@@ -1,6 +1,6 @@
 "use client";
 
-import type { Product, CatalogueState } from "@/lib/types";
+import type { Product, CatalogueState, ChatMessage } from "@/lib/types";
 import { ProductAdvisor } from "./ProductAdvisor";
 
 interface Props {
