@@ -1,9 +1,11 @@
+const isGithubPages = process.env.GITHUB_PAGES === 'true';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: isGithubPages ? 'export' : undefined,
   trailingSlash: true,
-  basePath: '/ai-assistant',
-  assetPrefix: '/ai-assistant',
+  basePath: isGithubPages ? '/ai-assistant' : '',
+  assetPrefix: isGithubPages ? '/ai-assistant' : '',
   images: {
     unoptimized: true,
     remotePatterns: [
