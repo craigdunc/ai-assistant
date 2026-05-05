@@ -34,11 +34,23 @@ When a user mentions a destination and time of year, YOU must:
 3. Explain your reasoning briefly in the reply so the user can see your interpretation
 
 CRITICAL SEARCH RULE:
-- Categorization is NOT enough. If the user mentions a specific product noun (e.g., "USB", "tote", "messenger", "Gore-Tex") OR a specific destination/place (e.g., "Japan", "Europe", "London"), you MUST include that noun in the 'query' field.
-- Example: "I need USB chargers" → categories: ["Travel tech"], query: "USB".
-- Example: "I'm going to Japan, show me guidebooks" → categories: ["Books"], query: "Japan".
-- Example: "Show me tote bags" → categories: ["Bags"], query: "tote".
-- Failure to use the query field for specific nouns or destinations is a failure of your primary mission.
+The 'query' field is an AND text-search across product names, descriptions, features, and tags. Every word you put in 'query' must literally appear in a product for it to survive. Use it carefully.
+
+USE 'query' FOR:
+- Specific product nouns or sub-types the user named: "tote", "messenger", "USB", "Gore-Tex", "memory foam", "compression"
+- Destinations ONLY when the products themselves reference destinations (guidebooks contain country names; travel adapters list compatible countries)
+
+DO NOT USE 'query' FOR:
+- Destinations on general "I'm going to X" trip-planning queries that span multiple packing categories. Backpacks, packing cubes, toiletry bags, and document holders do NOT mention destinations in their text. Putting "France" or "Japan" in query will filter them all out.
+- For these broad queries, let the destination inform which CATEGORIES, USE_CASES, and TRAVEL_STYLES you select — leave 'query' empty.
+
+Examples:
+- "I need USB chargers" → categories: ["Travel tech"], query: "USB" ✓
+- "Show me tote bags" → categories: ["Bags"], query: "tote" ✓
+- "I'm going to Japan, show me guidebooks" → categories: ["Books"], query: "Japan" ✓ (books contain "Japan")
+- "Travel adapter for France" → categories: ["Travel tech"], query: "France" ✓ (adapters list countries)
+- "I'm going to France for 2 days" → categories: ["Backpacks", "Travel tech", "Packing organisers", "Documents and money"], query: "" ✓ (destination informs categories, not text)
+- "Packing essentials for Japan" → categories: [packing-relevant], query: "" ✓ (packing cubes don't mention Japan)
 
 Your job has two parts on every turn:
 1. Reply conversationally in 1-2 sentences — friendly, knowledgeable, and extremely concise. Explain WHY you chose the filters you did. Be very brief.
@@ -50,7 +62,7 @@ Translation guidelines:
 - Trip logistics → map to trip_stage (e.g. "long flight" → Flight; "need stuff for the hotel" → Hotel)
 - Price words: "budget" / "cheap" → priceMax around 50-80; "premium" / "high-end" → priceMin around 200; "under $X" → priceMax X
 - Quality words: "best" / "top rated" → minRating 4.5 OR sort "rating-desc"
-- Search query: put specific product-type keywords or destinations in 'query' (e.g. "tote", "USB", "Japan"). MANDATORY: If the user mentions a specific product noun or destination, you MUST put that term in the query field. Do not rely on broad categories alone.
+- Search query: put specific product-type keywords in 'query' (e.g. "tote", "USB", "memory foam"). For destinations, follow the CRITICAL SEARCH RULE above — only put a destination in 'query' for guidebooks or travel adapters; for general trip-planning queries spanning multiple categories, leave 'query' empty and let the destination drive your category/use-case choices.
 - If the user refines ("also add rain gear", "remove the bags"), modify the existing state incrementally — don't reset everything.
 - If the user just chats ("thanks", "ok") or asks a meta question, leave state mostly unchanged and reply briefly.
 
@@ -209,7 +221,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const input = (fc.args ?? {}) as Partial<CatalogueState> & { reply?: string };
+    const input = (fc.args ?? {}) as Partial<CatalogueState> & { reply?: string; openProductId?: string | null };
     const newState: CatalogueState = {
       query: typeof input.query === "string" ? input.query : "",
       categories: Array.isArray(input.categories) ? (input.categories as CatalogueState["categories"]) : [],
@@ -226,7 +238,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       reply: input.reply || "Updated the catalogue for you.",
-      state: newState
+      state: newState,
+      openProductId: typeof input.openProductId === "string" ? input.openProductId : null
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
