@@ -42,10 +42,10 @@ export function CatalogueApp() {
           <div className="text-xs text-gray-400 hidden md:block shrink-0">
             {PRODUCTS.length} products
           </div>
-          {/* Mobile filter toggle */}
+          {/* Filter toggle — visible until lg (filters become a sidebar at lg+) */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden text-xs bg-gray-700 px-2 py-1 rounded"
+            className="lg:hidden text-xs bg-gray-700 px-2 py-1 rounded"
           >
             Filters {activeFilters > 0 && `(${activeFilters})`}
           </button>
@@ -57,13 +57,13 @@ export function CatalogueApp() {
 
       {/* Main content */}
       <main className="max-w-[1600px] mx-auto w-full px-4 py-3 grid grid-cols-12 gap-3 flex-1">
-        {/* Filter sidebar */}
-        <div className={`col-span-12 md:col-span-3 lg:col-span-2 ${showFilters ? "block" : "hidden md:block"}`}>
+        {/* Filter sidebar — sidebar at lg+; before that, accessed via the header toggle */}
+        <div className={`col-span-12 lg:col-span-2 ${showFilters ? "block" : "hidden lg:block"}`}>
           <FilterPanel state={state} onChange={setState} />
         </div>
 
         {/* Product grid */}
-        <section className="col-span-12 md:col-span-9 lg:col-span-7 flex flex-col gap-2">
+        <section className="col-span-12 md:col-span-8 lg:col-span-7 flex flex-col gap-2">
           <div className="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-1.5">
             <div className="text-sm text-gray-700">
               <span className="font-medium">{visible.length}</span> result{visible.length === 1 ? "" : "s"}
@@ -85,7 +85,7 @@ export function CatalogueApp() {
               <p className="text-sm">Try removing some filters, or ask the AI to help you find what you need.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
               {visible.map(p => (
                 <ProductCard
                   key={p.id}
@@ -97,8 +97,8 @@ export function CatalogueApp() {
           )}
         </section>
 
-        {/* Chat panel */}
-        <div className="col-span-12 lg:col-span-3">
+        {/* Chat panel — side column from md (e.g. Pixel Fold landscape) upward */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3">
           <ChatPanel 
             state={state} 
             onApplyState={setState} 

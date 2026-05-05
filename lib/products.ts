@@ -26,8 +26,8 @@ interface RawItem {
 
 const items = raw as RawItem[];
 
-// Synthesize a plausible addedDate so "newest" sort works. The catalogue is
-// ordered tk-001 → tk-100; later ids = newer.
+// Synthesize a plausible addedDate so "newest" sort works. Items later in
+// the catalogue array are treated as newer (3-day spacing back from today).
 const newestEpoch = Date.parse("2026-04-15");
 const dayMs = 24 * 60 * 60 * 1000;
 
