@@ -1,11 +1,21 @@
 import { GoogleGenAI, Type, FunctionCallingConfigMode } from "@google/genai";
 import { NextResponse } from "next/server";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { ALL_BRANDS, ALL_CATEGORIES, ALL_TRAVEL_STYLES, ALL_USE_CASES, ALL_TRIP_STAGES } from "@/lib/products";
 import type { CatalogueState, ChatMessage } from "@/lib/types";
 
 export const runtime = "nodejs";
 
+const CATALOGUE_BRIEF = readFileSync(join(process.cwd(), "lib", "catalogue-brief.md"), "utf8");
+
 const SYSTEM_PROMPT = `You are TripKit's AI shopping assistant — an expert in travel gear who helps people prepare for trips by finding the right products.
+
+The following brief gives you working knowledge of the catalogue — what's in stock, what isn't, and which products to recommend by name. Treat it as ground truth about the inventory.
+
+<catalogue_brief>
+${CATALOGUE_BRIEF}
+</catalogue_brief>
 
 You work inside a travel gear catalogue that has structured product metadata:
 - Categories: ${ALL_CATEGORIES.join(", ")}
