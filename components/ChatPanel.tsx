@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DEFAULT_STATE, type CatalogueState, type ChatMessage, type Product } from "@/lib/types";
 import { applyState } from "@/lib/filter-sort";
 import { PRODUCTS } from "@/lib/products";
@@ -14,14 +14,6 @@ interface Props {
   onSelectProduct: (p: Product) => void;
 }
 
-const SUGGESTIONS = [
-  "I'm going to Japan — show me the best guidebooks",
-  "Long-haul flight essentials for sleeping",
-  "How to pack more efficiently with cubes?",
-  "Tech accessories for international travel",
-  "Everything I need for a weekend away"
-];
-
 export function ChatPanel({ state, onApplyState, resultCount, messages, setMessages, onSelectProduct }: Props) {
   // We keep the full message history for the API context,
   // but only display the LATEST assistant reply in the UI.
@@ -29,7 +21,6 @@ export function ChatPanel({ state, onApplyState, resultCount, messages, setMessa
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [suggestionIdx, setSuggestionIdx] = useState(0);
   const [isMini, setIsMini] = useState(false);
 
   const latestReply = [...messages].reverse().find(m => m.role === "assistant")?.content ?? "";
@@ -47,18 +38,6 @@ export function ChatPanel({ state, onApplyState, resultCount, messages, setMessa
     setError(null);
     onApplyState(DEFAULT_STATE);
   };
-
-  useEffect(() => {
-    if (hasConversation || busy) return;
-    const timer = setInterval(() => {
-      setSuggestionIdx(i => {
-        let next;
-        do { next = Math.floor(Math.random() * SUGGESTIONS.length); } while (next === i && SUGGESTIONS.length > 1);
-        return next;
-      });
-    }, 20000);
-    return () => clearInterval(timer);
-  }, [hasConversation, busy]);
 
   const send = async (text: string, retryCount = 0, overrideMessages?: ChatMessage[], overrideState?: CatalogueState) => {
     const userMsg: ChatMessage = { role: "user", content: text };
@@ -205,49 +184,16 @@ export function ChatPanel({ state, onApplyState, resultCount, messages, setMessa
         )}
       </div>
 
-      {/* Top Picks Section */}
-      {!busy && (
+      {/* Top pick — only after a conversation has produced results */}
+      {!busy && hasConversation && results.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-900 mb-2">Top picks</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {hasConversation && results.length > 0 ? (
-              <div className="col-span-3">
-                <TopPick 
-                  image={results[0].image} 
-                  label={results[0].name} 
-                  onClick={() => onSelectProduct(results[0])} 
-                  isWide
-                />
-              </div>
-            ) : (
-              <>
-                <TopPick icon="🎒" label="Backpacks" onClick={() => send("Show me backpacks")} />
-                <TopPick icon="🧳" label="Organisers" onClick={() => send("Show me packing organisers")} />
-                <TopPick icon="🎧" label="Travel tech" onClick={() => send("Show me travel tech")} />
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Suggested Questions */}
-      {!busy && !hasConversation && (
-        <div className="flex flex-col gap-2 mb-4">
-          <p className="text-xs font-semibold text-gray-900 mb-1">Ask me anything about travel gear</p>
-          {SUGGESTIONS.slice(0, 3).map(s => (
-            <button
-              key={s}
-              onClick={() => send(s)}
-              className="flex items-center justify-between text-left px-4 py-2 bg-white border border-gray-100 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all group"
-            >
-              <span className="text-xs text-gray-600 font-medium leading-tight">{s}</span>
-              <span className="text-gray-300 group-hover:text-amber-400 transition-colors">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2">
-                  <path d="M5 12h14m-7-7 7 7-7 7" />
-                </svg>
-              </span>
-            </button>
-          ))}
+          <h3 className="text-xs font-semibold text-gray-900 mb-2">Top pick</h3>
+          <TopPick
+            image={results[0].image}
+            label={results[0].name}
+            onClick={() => onSelectProduct(results[0])}
+            isWide
+          />
         </div>
       )}
 
