@@ -63,7 +63,7 @@ export function CatalogueApp() {
         </div>
 
         {/* Product grid */}
-        <section className="col-span-12 md:col-span-8 lg:col-span-7 flex flex-col gap-2">
+        <section className="col-span-12 sm:col-span-8 lg:col-span-7 flex flex-col gap-2">
           <div className="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-1.5">
             <div className="text-sm text-gray-700">
               <span className="font-medium">{visible.length}</span> result{visible.length === 1 ? "" : "s"}
@@ -97,8 +97,8 @@ export function CatalogueApp() {
           )}
         </section>
 
-        {/* Chat panel — side column from md (e.g. Pixel Fold landscape) upward */}
-        <div className="col-span-12 md:col-span-4 lg:col-span-3">
+        {/* Chat panel — side column from sm upward (catches Pixel Fold landscape, including at 130% zoom) */}
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3">
           <ChatPanel 
             state={state} 
             onApplyState={setState} 
